@@ -22,11 +22,6 @@
     "types": ["node", "vite/client"], // 指定加载【哪些】声明文件包，如不设置此项，默认会加载全部能找到的 node_modules/@types/xxx 包
     // "vite/client"用于 vite 项目中的一些类型定义补充，https://www.typescriptlang.org/tsconfig#types
     "isolatedModules": true, // https://cn.vitejs.dev/guide/features.html#typescript-compiler-options
-    "paths": {
-      // 配置具体如何解析 require/import 的导入，值是基于 baseUrl 路径的映射列表。https://www.typescriptlang.org/tsconfig#paths
-      "@/*": ["src/*"]
-      // ...
-    },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"] // 编译时引入的 ES 功能库
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
