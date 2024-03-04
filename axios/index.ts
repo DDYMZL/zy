@@ -1,5 +1,6 @@
 
 import axios from "axios";
+import { tansParams } from './utils/format'
 
 import type {
   AxiosResponse,
@@ -51,6 +52,10 @@ class Request {
 
   get<T = any, R = IResponse<T>>(config: IConfig) {
     config.method = "GET";
+    let url = config.url + '?' + tansParams(config.params);
+    url = url.slice(0, -1);
+    config.params = {};
+    config.url = url;
     return this.#instance<unknown, R>(config);
   }
 
