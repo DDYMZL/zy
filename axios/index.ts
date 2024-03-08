@@ -88,7 +88,7 @@ class Request {
     this.#instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig<any>) => {
         if (!config.headers?.noToken) {
-          config.headers[this.authConfig.tokenKey] = this.authConfig.tokenStart + this.authConfig.getToken();
+          config.headers[this.authConfig.tokenKey] = this.authConfig.token;
         }
         if (config.headers?.emptyBaseURL) {
           config.baseURL = "";

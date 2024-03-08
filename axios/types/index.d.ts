@@ -80,9 +80,9 @@ export interface IUserProfile {
 }
 
 export interface IAuthConfig {
-  getToken: () => void;
   removeToken: () => void;
   errorCb: (msg: string) => void;
+  token: string;
   tokenStart: string;
   tokenKey: string;
   redirectUrl: string;
