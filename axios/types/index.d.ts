@@ -109,7 +109,7 @@ export interface IConfig {
   params?: any;
   headers?: any;
   timeout?: number;
-  responseType: 
+  responseType?: 
   | 'arraybuffer'
   | 'blob'
   | 'document'
