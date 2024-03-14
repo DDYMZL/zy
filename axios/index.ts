@@ -7,42 +7,17 @@ import type {
   AxiosInstance,
   InternalAxiosRequestConfig,
 } from "axios";
-import type { IAuthConfig, IResponse } from './types/index.d'
-
-type TMethod =
-  | "POST"
-  | "OPTIONS"
-  | "GET"
-  | "HEAD"
-  | "PUT"
-  | "DELETE"
-  | "TRACE"
-  | "CONNECT";
+import type { IAuthConfig, IResponse, IConfig } from './types/index.d'
 
 const TIME_OUT = 30000;
 
-const ERROE_CODE_MSG: { [key: number]: string } = {
-  401: "无效的会话，或者会话已过期，请重新登录！",
-  403: "当前操作没有权限",
-  404: "访问资源不存在",
-};
-
-interface IConfig {
-  url: string;
-  baseURL?: string;
-  method?: TMethod;
-  data?: any;
-  params?: any;
-  headers?: any;
-  timeout?: number;
-}
 
 class Request {
   #instance: AxiosInstance;
-  authConfig: IAuthConfig;
+  #authConfig: IAuthConfig;
 
   constructor(config: IAuthConfig) {
-    this.authConfig = config;
+    this.#authConfig = config;
     this.#instance = axios.create({
       baseURL: config.baseURL,
       timeout: TIME_OUT,
@@ -74,6 +49,10 @@ class Request {
     return this.#instance<unknown, R>(config);
   }
 
+  request<T = any, R = IResponse<T>>(config: IConfig){
+    return this.#instance<unknown, R>(config);
+  }
+
   getDefault<T = any, R = IResponse<T>>(config: IConfig) {
     config.method = "GET";
     const instance = axios.create({
@@ -88,7 +67,7 @@ class Request {
     this.#instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig<any>) => {
         if (!config.headers?.noToken) {
-          config.headers[this.authConfig.tokenKey] = this.authConfig.token;
+          config.headers[this.#authConfig.tokenKey || 'Authorization'] = `${this.#authConfig.tokenStart || 'Bearer '}${this.#authConfig.getToken()}`;
         }
         if (config.headers?.emptyBaseURL) {
           config.baseURL = "";
@@ -102,10 +81,17 @@ class Request {
 
     this.#instance.interceptors.response.use(
       (response: AxiosResponse) => {
+
+        // 二进制数据则直接返回
+        if (
+          response.request.responseType === 'blob' ||
+          response.request.responseType === 'arraybuffer'
+        ) {
+          return Promise.resolve(response.data)
+        }
+
         const { code, info } = response.data;
-        if (code === 200) {
-          return Promise.resolve(response.data);
-        } else if (info === "OK") {
+        if (code === 200 || info === "OK") {
           return Promise.resolve(response.data);
         } else {
           return this.#handleError(response);
@@ -134,14 +120,8 @@ class Request {
   }
 
   #handleError(response: AxiosResponse) {
-    const { code, data, msg } = response.data;
-    const errmsg = ERROE_CODE_MSG[code] || msg;
-    this.authConfig.errorCb(errmsg)
-    if (code === 401) {
-      this.authConfig.removeToken();
-      location.href = this.authConfig.redirectUrl;
-    }
-    return Promise.reject(data);
+    this.#authConfig.errorCb(response.data)
+    return Promise.reject(response.data);
   }
 }
 
