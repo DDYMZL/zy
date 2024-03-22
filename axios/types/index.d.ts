@@ -83,11 +83,10 @@ export interface IUserProfile {
 
 export interface IAuthConfig {
   removeToken: () => void;
-  errorCb: (res: AxiosResponse) => Promise<never>;
+  errorCb?: (res: AxiosResponse) => Promise<never>;
   getToken: () => string;
   tokenStart?: string;
   tokenKey?: string;
-  loginUrl?: string;
   baseURL: string;
 }
 

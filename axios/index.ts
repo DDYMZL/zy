@@ -72,6 +72,14 @@ class Request {
         if (config.headers?.emptyBaseURL) {
           config.baseURL = "";
         }
+        // 自定义 baseURL
+        if (config.headers?.customBase) {
+          config.baseURL = config.headers.customBase;
+        }
+        if (config.headers?.['Content-Type']) {
+          config.headers['Content-Type'] = config.headers['Content-Type'];
+        }
+        
         return config;
       },
       (error) => {
@@ -120,7 +128,7 @@ class Request {
   }
 
   #handleError(response: AxiosResponse) {
-    this.#authConfig.errorCb(response.data)
+    this.#authConfig.errorCb && this.#authConfig.errorCb(response)
     return Promise.reject(response.data);
   }
 }
