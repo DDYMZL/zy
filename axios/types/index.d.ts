@@ -1,3 +1,5 @@
+import type { AxiosResponse } from 'axios';
+
 /**
  * 用户信息
  *
@@ -80,14 +82,42 @@ export interface IUserProfile {
 }
 
 export interface IAuthConfig {
-  getToken: () => void;
   removeToken: () => void;
-  errorCb: (msg: string) => void;
-  tokenStart: string;
-  tokenKey: string;
-  redirectUrl: string;
+  errorCb?: (res: AxiosResponse) => Promise<never>;
+  getToken: () => string;
+  tokenStart?: string;
+  tokenKey?: string;
   baseURL: string;
 }
+
+type TMethod =
+  | "POST"
+  | "OPTIONS"
+  | "GET"
+  | "HEAD"
+  | "PUT"
+  | "DELETE"
+  | "TRACE"
+  | "CONNECT";
+
+export interface IConfig {
+  url: string;
+  baseURL?: string;
+  method?: TMethod;
+  data?: any;
+  params?: any;
+  headers?: any;
+  timeout?: number;
+  responseType?: 
+  | 'arraybuffer'
+  | 'blob'
+  | 'document'
+  | 'json'
+  | 'text'
+  | 'stream';
+}
+
+export type TResponseType = 'arraybuffer'| 'blob'| 'document'| 'json'| 'text'| 'stream';  
 
 import axios from '../index'
 export default axios
